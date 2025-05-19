@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Training Classes Blog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Domine:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #121212; /* Slightly softer black */
+            color: #e0e0e0; /* Lighter gray for better contrast */
+            font-family: 'Domine', 'Roboto', serif; /* Domine first, Roboto as fallback */
+            font-size: 20px; /* Increased base font size */
+            line-height: 1.7; /* Adjusted line height */
+            padding: 2.5rem;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .blog-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem; /* Added padding for blog content area */
+        }
+
+        h2 {
+            font-size: 3rem; /* Increased H2 size */
+            margin-bottom: 1.5rem;
+            color: white;
+            font-weight: 700; /* Bolder headings */
+        }
+
+        h3 {
+            font-size: 2.5rem; /* Increased H3 size */
+            margin: 2rem 0 1rem;
+            color: #66B2FF;
+            font-weight: 700;
+        }
+
+        p {
+            margin-bottom: 1.5rem; /* Increased paragraph margin */
+            font-size: 1.15rem; /* Slightly larger paragraph text if base is 20px */
+        }
+
+        ul {
+            list-style: disc; /* More standard list style */
+            padding-left: 2rem; /* Indent list */
+            margin-bottom: 1.5rem;
+        }
+
+        ul li {
+            background: #2a2a2a; /* Darker list item background */
+            padding: 0.75rem 1rem; /* Adjusted padding */
+            margin: 0.5rem 0;
+            border-radius: 8px; /* Softer border radius */
+            border-left: 4px solid #66B2FF; /* Accent border */
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem; /* Increased gap */
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .image-container {
+            position: relative;
+            width: 320px; /* Slightly larger image containers */
+            height: 320px;
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.08); /* Softer shadow */
+            border-radius: 8px; /* Rounded corners for image containers */
+            overflow: hidden; /* Ensure images don't overflow rounded corners */
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover; /* Changed to cover for better filling, or use contain if preferred */
+            cursor: pointer; /* Indicate images are clickable */
+            transition: transform 0.3s ease; /* Smooth hover effect */
+        }
+
+        .image-container img:hover {
+            transform: scale(1.05); /* Slight zoom on hover */
+        }
+
+        .image-container span { /* Loading text */
+            position: absolute;
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+
+        .blurred {
+            filter: blur(18px); /* Increased blur */
+            transition: filter 0.3s ease;
+        }
+
+        .blur-button {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 0.75rem 1.5rem; /* Larger button padding */
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            font-family: 'Roboto', sans-serif; /* Button font */
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .blur-button:hover {
+            background: #e6c200;
+        }
+
+        /* Image Modal Styles */
+        .image-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 85%;
+            max-height: 85%;
+            border-radius: 8px;
+        }
+
+        .modal-close-button {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .modal-close-button:hover,
+        .modal-close-button:focus {
+            color: #bbb;
+            text-decoration: none;
+        }
+
+
+        /* Media queries for responsiveness */
+        @media (max-width: 768px) {
+            body {
+                font-size: 18px; /* Adjusted for tablets */
+                padding: 1.5rem;
+            }
+            h2 {
+                font-size: 2.5rem;
+            }
+            h3 {
+                font-size: 2rem;
+            }
+            .image-container {
+                width: 250px; /* Adjusted for tablets */
+                height: 250px;
+            }
+             p {
+                font-size: 1.05rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 16px; /* Adjusted for mobile */
+                padding: 1rem;
+            }
+            h2 {
+                font-size: 2rem;
+            }
+            h3 {
+                font-size: 1.75rem;
+            }
+            .image-container {
+                width: 100%; /* Full width on small screens */
+                max-width: 300px; /* Max width to avoid overly large images */
+                height: auto; /* Maintain aspect ratio */
+                aspect-ratio: 1 / 1; /* Make them square if width is 100% */
+            }
+            p {
+                font-size: 1rem;
+            }
+            ul {
+                padding-left: 1.5rem;
+            }
+            .modal-content {
+                max-width: 90%;
+                max-height: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="blog-content">
+        <section id="introduction">
+            <h2>Welcome to the AI Training Blog</h2>
+            <p>This is a blog explaining different classes which are needed to be trained in the AI model. <strong>Please read this really carefully</strong>. By reading this, you'll also understand many new things. By helping me train the images, you are not only helping but you are helping to build an AI model for humankind and for people to get a glow-up. :)</p>
+
+
+            <p>Here are the classes we will cover:</p>
+            <ul>
+                <li>'male'</li>
+                <li>'female'</li>
+                <li>'age_minor' # 0–17</li>
+                <li>'age_adult' # 18–50</li>
+                <li>'age_senior' # 50+</li>
+                <li>'skin_light'</li>
+                <li>'skin_medium'</li>
+                <li>'skin_dark'</li>
+                <li>'beard'</li>
+                <li>'mustache'</li>
+                <li>'glasses'</li>
+                <li>'straight_hair'</li>
+                <li>'curly_hair'</li>
+                <li>'wavy_hair'</li>
+                <li>'bald'</li>
+                <li>'acne_mild'</li>
+                <li>'acne_moderate'</li>
+                <li>'acne_severe'</li>
+                <li>'redness'</li>
+                <li>'dark_spots'</li>
+                <li>'under_eyes'</li>
+                <li>'scars'</li>
+                <li>'freckles'</li>
+                <li>'uneven_texture'</li>
+                <li>'attractive_eyes'</li>
+            </ul>
+        </section>
+        
+        <p>Tip: Click any image to view full.</p>
+
+        <section id="gender">
+            <h2>Gender</h2>
+            <h3>Male</h3>
+            <p>Now, it's pretty sure you are intelligent enough to find a gender 🤣. Here is an example of a male:</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/qqnvs6rY/CAMERA-2937.png" alt="Male example">
+                </div>
+            </div>
+
+            <h3>Female</h3>
+            <p>And, Female:</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/KvfRJLBS/7umJvT.png" alt="Female example">
+                </div>
+            </div>
+
+            <p>But remember, if there is a child image like this, which is hard to determine gender, then simply delete it:</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.pinimg.com/474x/eb/1a/a3/eb1aa304828efa3f53cd68e979ac4e59.jpg" alt="Child example">
+                </div>
+            </div>
+
+            <p>But if you can determine the gender, then label it, for example, this image (it's female):</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://img.freepik.com/free-photo/close-up-face-smiling-beautiful-baby-girl-nature-summer-while-posing-camera_132075-5816.jpg" alt="Determinable gender child">
+                </div>
+            </div>
+
+            <p>The reason I am telling you to delete the image is because not training is better than training wrong information. Sometimes confusion happens if a person is transgender; simply remove the image if it's hard to detect gender, not only in children but also in adults.</p>
+        </section>
+
+        <section id="age">
+            <h2>Age</h2>
+            <h3>Minor (0–17)</h3>
+            <p>Minor means people who are under 18.</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/X7Bs5wPL/6lWmhV.png" alt="Minor example 1">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/SxWVTmkz/8xujEB.png" alt="Minor example 2">
+                </div>
+            </div>
+
+            <h3>Adult (18–50)</h3>
+            <p>Adult means people who are 18–50 years old.</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/6Qx6KLkm/0GTeUz.png" alt="Adult example 1">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/m20B3ygg/9m4FfQ.png" alt="Adult example 2">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/zXLqRc5Q/b7eF5F.png" alt="Adult example 3">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/wjLHwR1c/BGmmlO.png" alt="Adult example 4">
+                </div>
+            </div>
+
+            <h3>Senior (50+)</h3>
+            <p>Senior means older people; these images are limited in our datasets as of yet.</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://img.freepik.com/free-photo/front-view-man-posing-indoors_23-2149883570.jpg?semt=ais_hybrid&w=740" alt="Senior example 1">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://thumbs.dreamstime.com/b/beautiful-50-year-old-woman-617685.jpg" alt="Senior example 2">
+                </div>
+            </div>
+        </section>
+
+        <section id="skin-tone">
+            <h2>Skin Tone</h2>
+            <h3>Light Skin Tone</h3>
+            <p>Remember, label those images with light tone when you feel like AI should compliment this person by having glowing and lighter skin tones, like these:</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/nhqv1TpF/0BL4qv.png" alt="Light skin tone 1">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/SRX9Yfgp/0uonwj.png" alt="Light skin tone 2">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/gc58F10c/1ldZvh.png" alt="Light skin tone 3">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/bJwkphbr/2TDkR5.png" alt="Light skin tone 4">
+                </div>
+            </div>
+            <p>Here’s another example. You might think this falls under medium or dark, but this is because of lighting. She actually has a lighter skin tone, so choose lighter:</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/0jLwYK4K/5DWumf.png" alt="Light skin tone lighting example">
+                </div>
+            </div>
+            <p>At this point, if an image’s lighting is not very good, simply delete the image without hesitation.</p>
+
+            <h3>Medium Skin Tone</h3>
+            <p>Let me also show medium skin-toned people:</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/5tLQJt6f/7ic5bp.png" alt="Medium skin tone 1">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/FzW7pdnV/Hdyi5D.png" alt="Medium skin tone 2">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/Yq049Rhn/hhQy1q.png" alt="Medium skin tone 3">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.postimg.cc/T2CLfFY5/aCncrs.png" alt="Medium skin tone 4">
+                </div>
+            </div>
+
+            <h3>Dark Skin Tone</h3>
+            <p>Now, it’s time for pure dark skin-toned people. We are collecting these to suggest suitable colored dresses for them. I also want to say that never be racist. Dark-skinned people are also really beautiful and sometimes they look better than white people. So, they are really good in their own way.</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Dress_%28Klashorst%29-cropped.jpg" alt="Dark skin tone 1">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://t4.ftcdn.net/jpg/03/88/36/65/360_F_388366500_gibGJE8ShgnZrX1pk4N2ASobbKOhhN0E.jpg" alt="Dark skin tone 2">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://img.freepik.com/free-photo/close-up-upset-american-black-person_23-2148749582.jpg?semt=ais_hybrid&w=740" alt="Dark skin tone 3">
+                </div>
+            </div>
+        </section>
+
+        <section id="facial-hair">
+            <h2>Facial Hair & Glasses</h2>
+            <p>Remember: Only plot these if the beard and mustache look good, like these:</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://media.gq.com/photos/595157b9ab1bf3672067490f/16:9/w_2560%2Cc_limit/milo-Ventimiglia-mustache.jpg" alt="Mustache example">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://hips.hearstapps.com/goodhousekeeping-uk/main/galleries/22777/backham-beard.jpg" alt="Beard example">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.pinimg.com/564x/7c/2b/7d/7c2b7d9d9a2fad0e31fdf3fe9f98b3de.jpg" alt="Facial hair example 1">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.pinimg.com/736x/c2/4e/8c/c24e8cf7927a4d1387214e5562c7c781.jpg" alt="Facial hair example 2">
+                </div>
+            </div>
+            <p>Don’t mark these kinds of images:</p>
+            <div class="image-gallery">
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://i.pinimg.com/564x/cf/d3/d1/cfd3d1b337d31edb6eca99b6163a9b1c.jpg" alt="Bad facial hair 1">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://miro.medium.com/v2/resize:fit:1400/1*nDOobBS87LS2q54i__7AvA.jpeg" alt="Bad facial hair 2">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://preview.redd.it/31-first-time-trying-to-grow-a-beard-just-got-out-of-the-v0-5zyn36ewiqma1.jpg?width=640&crop=smart&auto=webp&s=06bf0e606d8d552454ad036730047b83845c77e1" alt="Bad facial hair 3">
+                </div>
+                <div class="image-container">
+                    <span>Loading...</span>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSlQrjW32SlzCgald7c4Miu13YeUjA2LZ8Kg&s" alt="Bad facial hair 4">
+                </div>
+            </div>
+            <p>Label every time someone is wearing glasses, any kind of glasses, EVERY SINGLE TIME!</p>
+        </section>
+
+        <section id="hair-types">
+            <h2>Hair Types</h2>
+            <h3>Straight Hair</h3>
+            <p>Straight hair for both males and females:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/736x/06/97/9d/06979d9b5d4a9509bb605e3bc3588ac6.jpg" alt="Straight hair 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/W49NQFvD/MUyoGO.png" alt="Straight hair 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/xCh01wqn/pcAnyX.png" alt="Straight hair 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/76fHDHHK/Q7t0Pl.png" alt="Straight hair 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://d2bzx2vuetkzse.cloudfront.net/fit-in/0x450/unshoppable_producs/98e89241-365d-476a-adb3-ad0048c2af6f.jpeg" alt="Straight hair 5"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://qph.cf2.quoracdn.net/main-qimg-d19925148bdaedc49a84d6f76d79a39e-lq" alt="Straight hair 6"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/gk5V8DBJ/Screenshot-2025-05-19-144806.png" alt="Straight hair 7"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.barberstake.com/wp-content/uploads/2024/10/Long-Straight-Hair-Bangs.jpg" alt="Straight hair 8"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/564x/41/7c/fa/417cfa4e61bf593c483e58e923eb4d74.jpg" alt="Straight hair 9"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://menshaircuts.com/wp-content/uploads/2021/09/straight-hair-men-medium-side-part-drop-fade-683x1024.jpg" alt="Straight hair 10"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i0.wp.com/menhairstylesworld.com/wp-content/uploads/2019/09/Straight-and-Slicked-Back-Hairstyles.jpg?w=800&ssl=1" alt="Straight hair 11"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://cdn.shopify.com/s/files/1/0255/2417/4922/files/Straight_Hair_Mens_Pompadour_Haircut_1.jpg?v=1722948300" alt="Straight hair 12"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.ebayimg.com/images/g/4rkAAOSwlSRkVhgO/s-l1200.jpg" alt="Straight hair 13"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://haircutinspiration.com/wp-content/uploads/Textured-Crop-on-Straight-Hair_.jpg" alt="Straight hair 14"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://glaminati.com/wp-content/uploads/2023/12/boys-haircuts-long-slicked-back-undercut-683x1024.jpg" alt="Straight hair 15"></div>
+            </div>
+
+            <h3>Wavy Hair</h3>
+            <p>Wavy hair for both males and females:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/736x/72/f3/d7/72f3d79b3cc3c961fa7ee6e071a39116.jpg" alt="Wavy hair 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i0.wp.com/therighthairstyles.com/wp-content/uploads/2014/05/3-medium-layered-hairstyle-for-wavy-hair.jpg?w=500&ssl=1" alt="Wavy hair 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://scontent.fbir1-1.fna.fbcdn.net/v/t1.15752-9/494859495_722436130449072_5498109166254168861_n.png?_nc_cat=101&ccb=1-7&_nc_sid=0024fc&_nc_ohc=oX4s8P3W58YQ7kNvwFMdwtf&_nc_oc=AdnZEAqB2IAeXNGTk1qrwRUMI7YPpwiml-zkBygz6Nmcfh5LqFxdkXeF_o-kgLsdJbdwHrrmXKWufPPfFAboPleQ&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fbir1-1.fna&oh=03_Q7cD2QGyWnQa9-5Hfd8IRFf0GSDn6WjEWmTiPfmOrPX1Qm_b3w&oe=68527CE8" alt="Wavy hair 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/originals/ca/be/22/cabe22bc86577e1337a220bc76d113aa.jpg" alt="Wavy hair 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.realsimple.com/thmb/uB2Txb0gcZuwu1N9K_B2TfCDvKQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-157244684-2000-e9f7b0400a5d4f1ba79b79611eafee2c.jpg" alt="Wavy hair 5"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/474x/01/5f/0e/015f0edeb8210e8b4d363623ca93f011.jpg" alt="Wavy hair 6"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/474x/df/b9/d8/dfb9d816daf5fcbd8f3186122588a52b.jpg" alt="Wavy hair 7"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.byrdie.com/thmb/kpeZHBJ8TE8lgdh-qgJT-XOgZHk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Cropped_Image34-3efb682351af4fd68c5480b6cc3579c9.png" alt="Wavy hair 8"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.byrdie.com/thmb/XE_2esrGnA3JO439u5mjSJMDyRY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/wavyhairstylesformenmarlonteixera-dd783f35ee2441b8aea4eae7a5904eb4.jpg" alt="Wavy hair 9"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://cdn.shopify.com/s/files/1/0639/1237/8602/files/Tapered_Waves_Medium_Wavy_Hairstyles_Men_480x480.jpg?v=1705490877" alt="Wavy hair 10"></div>
+            </div>
+
+            <h3>Curly Hair</h3>
+            <p>Curly hair examples:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://hips.hearstapps.com/hmg-prod/images/young-latina-woman-laughing-royalty-free-image-1650657928.jpg?crop=0.668xw:1.00xh;0.148xw,0&resize=1200:*" alt="Curly hair 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://content.latest-hairstyles.com/wp-content/uploads/stunning-longer-curls.jpg" alt="Curly hair 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/736x/25/57/94/255794b1bd01ec47b808d26e142486d4.jpg" alt="Curly hair 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://curlmaven.ie/wp-content/uploads/2022/02/best-products-for-curly-hair.jpg" alt="Curly hair 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://hairstyleonpoint.com/wp-content/uploads/2016/11/Very-Curly-High-Pony.jpg" alt="Curly hair 5"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://cdn.yen.com.gh/images/1120/3o3bpd1ichf16f9jhg.jpeg?v=1" alt="Curly hair 6"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.gosupps.com/media/catalog/product/6/1/61j1FChKCzL_1.jpg" alt="Curly hair 7"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/YqPvmFFp/hetacf.png" alt="Curly hair 8"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/t46DSfLw/g58WCv.png" alt="Curly hair 9"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/HkbRcVsr/6BqBVe.png" alt="Curly hair 10"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/T2CLfFY5/aCncrs.png" alt="Curly hair 11"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.ytimg.com/vi/Z1BnWxzbJg0/maxresdefault.jpg" alt="Curly hair 12"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i0.wp.com/therighthairstyles.com/wp-content/uploads/2014/05/10-black-short-twisted-hairstyle.jpg?w=500&ssl=1" alt="Curly hair 13"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/564x/8e/ec/58/8eec587d2d6703d9e4970f2b96f1bda4.jpg" alt="Curly hair 14"></div>
+            </div>
+
+            <p>Remember, if hair is perfectly visible and good, then only label it. Don’t mark hair like these, which are bad and not suitable:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://hips.hearstapps.com/hmg-prod/images/701/can-discovery-end-balding-and-graying-1494333252.jpg" alt="Bad hair 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://svenson.com.ph/wp-content/uploads/2023/12/hair-loss-men-optimized.jpg" alt="Bad hair 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/T3hjFsBf/1naFpl.png" alt="Bad hair 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/4yJV52zC/3ruUXp.png" alt="Bad hair 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/d34dSRBh/bXWJZu.png" alt="Bad hair 5"></div>
+            </div>
+
+            <h3>Bald</h3>
+            <p>If no hair is there, then only mark as bald. If a little hair is there, then it’s not bald.</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://www.drserkanaygin.com/wp-content/uploads/2024/01/Can-You-Get-A-Hair-Transplant-If-You-Are-Completely-Bald.jpg.webp" alt="Bald example 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://preview.redd.it/love-being-bald-v0-j6vt2gglzszb1.jpg?width=1080&crop=smart&auto=webp&s=f77d8e92f0abc290e9cddb9420cc511343aea545" alt="Bald example 2"></div>
+            </div>
+            <p>Don’t mark as any hair for these kinds of heads:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/474x/b7/5e/21/b75e2154f9aa20931aba2c303d3f8850.jpg" alt="Not bald 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/564x/cf/d3/d1/cfd3d1b337d31edb6eca99b6163a9b1c.jpg" alt="Not bald 2"></div>
+            </div>
+        </section>
+
+        <section id="skin-conditions">
+            <h2>Skin Conditions</h2>
+            <h3>Acne</h3>
+            <p>Acne, or simple "pimples". Remember, in Black people, the acne might be blacker; some people get confused and think it’s dark spots. But you may even mark as dark spots.</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://images.ctfassets.net/fc84yqnhe77u/sZhhlhlkXOkUD57OYOREe/d8e70739f007f95e163aadb8cec8a771/slather-acne-severities-mobile.png?w=1280&h=1056&q=80&fm=png" alt="Acne severities"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://mydoctor.kaiserpermanente.org/ncal/Images/Acne_mild_moderate_severe-light_tcm75-2201974.png" alt="Acne types"></div>
+            </div>
+
+            <h4>Mild Acne</h4>
+            <p>These are mild acne:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://i.redd.it/tdil4g14kaj61.jpg" alt="Mild acne 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://cdn.shopify.com/s/files/1/0162/4980/files/iStock-851423236_large.jpg?v=1519254573" alt="Mild acne 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/XYLsRhjv/EqR0jn.png" alt="Mild acne 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/qMLcq39b/498287510-17987489798812628-9046966938796836684-n.webp" alt="Mild acne 4"></div>
+            </div>
+            <p>Please be careful, even if there is one pimple, then label it. If you believe due to image quality or blurriness the acne is not visible, remove the image.</p>
+
+            <h4>Moderate Acne</h4>
+            <p>Here is moderate acne:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/QtC5FYZ0/jNrCSI.png" alt="Moderate acne 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/zX8dB5Pj/2F113l.png" alt="Moderate acne 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/QxmfKP2r/4R7RxO.png" alt="Moderate acne 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/5yqn3kjL/63rRTA.png" alt="Moderate acne 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/1RpCs4MX/9S0rx6.png" alt="Moderate acne 5"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/g0QSkZfX/AFZ7j5.png" alt="Moderate acne 6"></div>
+            </div>
+
+            <h4>Severe Acne</h4>
+            <p>Here is severe acne, such a condition is suggested to go to a doctor:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://qph.cf2.quoracdn.net/main-qimg-b5d11e9440915f011afd95e179fc10f9.webp" alt="Severe acne 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/GtxxY7mN/Screenshot-2025-03-17-212158.png" alt="Severe acne 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/YqTJbjrx/FjE26b.png" alt="Severe acne 3"></div>
+            </div>
+            <p>Please remember when AI detects severe acne, it will suggest the user go to a hospital, so only label those images as severe acne which have very high and a lot of acne.</p>
+
+            <h3>Redness</h3>
+            <p>Remember, if the redness is done by makeup or if the redness is very little in amount, don’t label it. Here are some examples which you have to label:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://www.verywellhealth.com/thmb/ZBY_sOGPnv1a9b189MubNm-BuOI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/VWH-GettyImages-1096054006-c459ff892e4e4872a0e2b86391f00276.jpg" alt="Redness 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://restondermatology.com/wp-content/uploads/2021/12/Your-paragraph-text-9.png" alt="Redness 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/jddRfD83/JWMIpd.png" alt="Redness 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://wowfacial.co.uk/wp-content/uploads/2023/08/8.-Static.png" alt="Redness 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://assets.skinshop.co.uk/media/magefan_blog/Nathalie_Rose_before_Kalme_4.jpg" alt="Redness 5"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.redd.it/winter-makes-face-worse-v0-ckwyudv38oha1.jpg?width=1576&format=pjpg&auto=webp&s=eb94adb0ff5ba5903f837cdc15a9eed48919a341" alt="Redness 6"></div>
+            </div>
+            <p>This image has acne with redness; if there is huge redness, then simply label it as redness:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://i.postimg.cc/GtxxY7mN/Screenshot-2025-03-17-212158.png" alt="Acne with redness"></div>
+            </div>
+            <p>Don’t label redness like this:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://i.ytimg.com/vi/1MQaxmTsJ0U/maxresdefault.jpg" alt="No redness"></div>
+            </div>
+
+            <h3>Dark Spots</h3>
+            <p>Now it’s time for dark spots or simple melasma. Remember, some people might get confused with dark spots and freckles, but both are different.</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://www.mostskincare.com/wp-content/uploads/2022/06/melasma-viso.jpg" alt="Dark spots 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.cyspera.com/wp-content/uploads/melasma-486x573.jpeg" alt="Dark spots 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.midlandsderm.com/wp-content/uploads/2022/04/dark-spots.jpg" alt="Dark spots 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://images.ctfassets.net/jbquigiuzvay/5Tfd970XL8Ia6jx9PIxeHp/6d9c4349e45bcdfbde1a907e524655f5/Dark_spots_on_face.webp" alt="Dark spots 4"></div>
+            </div>
+
+            <h3>Under Eyes</h3>
+            <p>Under eyes means dark circles or eye bags, like:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://www.cambridgemedical.com.sg/wp-content/uploads/2021/08/CMG-Blog-How-to-Get-Rid-of-Eyebags-Without-Surgery-1.jpg" alt="Under eyes 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://brisbaneskin.com.au/wp-content/uploads/rejuvenation-eyes-bags-feature.jpg" alt="Under eyes 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.verywellhealth.com/thmb/QuRfhxDS25S5atWd9lCtsm8vIjI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/VWH-GettyImages-1457012472-b69b6772ad974eb4a9565f2653ce3cbb.jpg" alt="Under eyes 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://drtheva.com.au/wp-content/uploads/2021/03/AdobeStock_175181783-scaled.jpeg" alt="Under eyes 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.drhealthclinic.com/wp-content/uploads/2022/12/what-causes-dark-circles-under-eyes.webp" alt="Under eyes 5"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.facerestoration.com/wp-content/uploads/2022/05/Condition-TearTrough-DarkCircles.jpg" alt="Under eyes 6"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://cdn11.bigcommerce.com/s-tbmjggiln3/images/stencil/1280x1280/uploaded_images/darkcircles-oneeye.jpg?t=1588164654?imbypass=on" alt="Under eyes 7"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://hips.hearstapps.com/hmg-prod/images/701/p-1-dark-circles-under-the-eyes-1519767176.jpg?crop=1xw:0.786xh;center,top&resize=1200:*" alt="Under eyes 8"></div>
+            </div>
+            <p>If the under-eye condition is not noticeable or small, then don’t label, like these:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://dermavue.com/wp-content/uploads/2023/12/eye-bag-reduction-1skin-clinic-best-dermatologist-in-kerala-expert-care-home-dermavue-lasers-cosmetology-PLASTIC-SURGERY.webp" alt="No under eyes 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.eyesolutions.in/wp-content/uploads/2023/11/unereye-dark-circles.jpg" alt="No under eyes 2"></div>
+            </div>
+            <p>Also, don’t label under eyes when there are wrinkles under eyes for seniors, like this:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://shensclinic.com/wp-content/uploads/2022/09/fine-lines-under-eyes-wrinkles.jpg" alt="Wrinkles not under eyes"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://thumbs.dreamstime.com/b/portrait-happy-old-man-smiling-looking-camera-36503172.jpg" alt="Senior wrinkles"></div>
+            </div>
+            <p>But you can label if it’s too noticeable rather than wrinkles, like:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://thumbs.dreamstime.com/b/senior-indian-man-varanasi-uttar-pradesh-india-july-senior-indian-man-deep-dark-circles-sweet-expression-smiles-163478890.jpg" alt="Noticeable under eyes"></div>
+            </div>
+            <p>Remember, sometimes it can look like under eyes while smiling or showing a different pose; don’t label if it’s just because of the pose.</p>
+
+            <h3>Acne Scars</h3>
+            <p>Scars mean a hole-type thing left after acne, like these:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://post.medicalnewstoday.com/wp-content/uploads/sites/3/2020/11/shutterstock_1193698840_header-1024x575.jpg" alt="Acne scars 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.carolinaskin.com/wp-content/uploads/2017/04/AcneScars.jpg" alt="Acne scars 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://flawlessaestheticclinic.co.uk/wp-content/uploads/2023/11/6-1024x1024.png.webp" alt="Acne scars 3"></div>
+            </div>
+
+            <h3>Freckles</h3>
+            <p>Please note that this might look like dark spots, but it’s different. Freckles are of different colors like black, brown, or red.</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://hips.hearstapps.com/hmg-prod/images/articles/2016/07/freckles-1487257651.jpg" alt="Freckles 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://upload.wikimedia.org/wikipedia/commons/e/ea/Vesnuschki.jpg" alt="Freckles 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.specialistskinclinic.uk/wp-content/smush-webp/2023/01/SSC-Freckles-and-Facial-Pigmentation.jpg.webp" alt="Freckles 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://kidsdiscover.blob.core.windows.net/kdoassets/uploads/quickreads/Freckles.jpg" alt="Freckles 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.jonesroadbeauty.com/cdn/shop/articles/justbobbi_freckles_1024x1024.jpg?v=1693237746" alt="Freckles 5"></div>
+            </div>
+            <p>Sometimes it might be smaller and hard to notice, but please analyze the image carefully and label. For example, this girl has freckles:</p>
+            <div class="image-gallery">
+                 <div class="image-container"><span>Loading...</span><img src="https://scontent.fbir1-1.fna.fbcdn.net/v/t1.15752-9/494859495_722436130449072_5498109166254168861_n.png?_nc_cat=101&ccb=1-7&_nc_sid=0024fc&_nc_ohc=oX4s8P3W58YQ7kNvwFMdwtf&_nc_oc=AdnZEAqB2IAeXNGTk1qrwRUMI7YPpwiml-zkBygz6Nmcfh5LqFxdkXeF_o-kgLsdJbdwHrrmXKWufPPfFAboPleQ&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fbir1-1.fna&oh=03_Q7cD2QGyWnQa9-5Hfd8IRFf0GSDn6WjEWmTiPfmOrPX1Qm_b3w&oe=68527CE8" alt="Freckles example"></div>
+            </div>
+
+            <h3>Uneven Texture</h3>
+            <p>There are only a few images in the dataset with this class. Label this image if there is an extremely bad condition of the face. These images are disturbing to see, so click the button to unblur them; they will be unblurred for 5 seconds.</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://basicsofburncare.org/wp-content/uploads/Photo-5-Facial-burn-injury-PBD-81.jpg" alt="Uneven texture 1" class="blurred"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://c8.alamy.com/comp/S49F22/a-girl-with-sfx-makeup-appears-to-have-a-burnt-face-S49F22.jpg" alt="Uneven texture 2" class="blurred"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://media.springernature.com/lw685/springer-static/image/chp%3A10.1007%2F978-981-15-1346-6_70/MediaObjects/462947_1_En_70_Fig30_HTML.jpg" alt="Uneven texture 3" class="blurred"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://media.post.rvohealth.io/wp-content/uploads/sites/3/2024/04/vitiligo-young-girl-1296x728-header-1024x575.jpg" alt="Uneven texture 4" class="blurred"></div>
+            </div>
+            <button class="blur-button" onclick="unblurImages()">Unblur Images</button>
+        </section>
+
+        <section id="eyes">
+            <h2>Attractive Eyes</h2>
+            <p>Here are some examples of attractive eyes:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://media.istockphoto.com/id/1423915410/photo/blue-eyes-and-perfect-shapes-of-eyebrows-close-up-portrait-of-beautiful-young-girl-looking-at.jpg?s=612x612&w=0&k=20&c=Sf5wYUNIKTKy33qfvop75JAxqjkDxjO74VS_SImmZq8=" alt="Attractive eyes 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.vice.com/wp-content/uploads/sites/2/2025/01/people-with-these-eye-features-are-considered-the-most-attractive.jpg" alt="Attractive eyes 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://drdekleer.ca/wp-content/uploads/2020/12/Screen-Shot-2020-12-17-at-3.41.24-PM-1024x672.png" alt="Attractive eyes 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/736x/4b/6f/82/4b6f82003d2702fab0a1d73d80193b67.jpg" alt="Attractive eyes 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/736x/74/d2/d9/74d2d9498634f5dd4d63530c552b46b4.jpg" alt="Attractive eyes 5"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://thumbs.dreamstime.com/b/perfect-man-young-handsome-sexy-pretty-brown-haired-boy-model-actor-natural-makeup-expressive-eyebrows-brown-eyes-face-nose-lips-55960747.jpg" alt="Attractive eyes 6"></div>
+            </div>
+            <p>Don’t plot images like these; Asian eyes are not considered attractive (not being racist, but it’s true that monolid eyes are not really attractive), so don’t plot these types of eyes:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://i.pinimg.com/736x/af/f0/48/aff04833aa904d1e445deba33b7969a1.jpg" alt="Not attractive eyes 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://i.ytimg.com/vi/Hm53jA7yXv4/hq2.jpg?sqp=-oaymwEoCOADEOgC8quKqQMcGADwAQH4AZQDgALQBYoCDAgAEAEYZSBWKEwwDw==&rs=AOn4CLAo4RhicdUViJN8BkC2kwAAh2gpuA" alt="Not attractive eyes 2"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://cdn.i-scmp.com/sites/default/files/styles/wide_landscape/public/images/methode/2016/12/07/5d43bd78-bc57-11e6-b1a9-d0a597083a8f_1280x720.JPG?itok=cVzftn32" alt="Not attractive eyes 3"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://www.asamnews.com/wp-content/uploads/2014/11/blepharoplasty-Before.jpg" alt="Not attractive eyes 4"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://qph.cf2.quoracdn.net/main-qimg-21a2a6ceb17a1e9ed2091373ed4983e4-lq" alt="Not attractive eyes 5"></div>
+            </div>
+            <p>Even very big eyes and some with bad conditions are not attractive:</p>
+            <div class="image-gallery">
+                <div class="image-container"><span>Loading...</span><img src="https://www.phxdryeye.com/s/cc_images/teaserbox_888812888.jpg?t=1543652462" alt="Bad eye condition 1"></div>
+                <div class="image-container"><span>Loading...</span><img src="https://people.com/thmb/Gdh5vV29ijrj5iMrNRFNSEeSLFo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(689x529:691x531)/Shauna-Rae-Instagram-01-042023-c1ffe75583e54e4e9e058110f76b983f.jpg" alt="Bad eye condition 2"></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Conclusion</h2>
+
+            <p>Please remember that i might have used some image which should not be used while traning, those upper images are just for understanding classes.</p>
+            <p>Thanksssssssssss for reading. Please remove those images with low quality, tilted images, very far faces, or not proper full faces. I really appreciate you. And, you are not just helping me, you are a part of the team :). Peace out.</p>
+
+
+            <br><p align="center">Designed by Saswat.</p>
+
+        </section>
+    </div>
+
+    <div id="myModal" class="image-modal">
+      <span class="modal-close-button">&times;</span>
+      <img class="modal-content" id="img01">
+    </div>
+
+    <script>
+        // Hide loading text when image loads
+        document.querySelectorAll('.image-container img').forEach(img => {
+            img.onload = () => {
+                if (img.previousElementSibling && img.previousElementSibling.tagName === 'SPAN') {
+                    img.previousElementSibling.style.display = 'none';
+                }
+            };
+            // In case the image is already loaded from cache
+            if (img.complete) {
+                 if (img.previousElementSibling && img.previousElementSibling.tagName === 'SPAN') {
+                    img.previousElementSibling.style.display = 'none';
+                }
+            }
+        });
+
+        // Unblur images for 5 seconds
+        function unblurImages() {
+            const blurredImages = document.querySelectorAll('.image-gallery img.blurred'); // Be more specific
+            blurredImages.forEach(img => {
+                img.classList.remove('blurred');
+            });
+            setTimeout(() => {
+                blurredImages.forEach(img => {
+                    img.classList.add('blurred');
+                });
+            }, 5000);
+        }
+
+        // Image Modal JavaScript
+        var modal = document.getElementById("myModal");
+        var modalImg = document.getElementById("img01");
+        var galleryImages = document.querySelectorAll(".image-gallery .image-container img");
+        var span = document.getElementsByClassName("modal-close-button")[0];
+
+        galleryImages.forEach(img => {
+            img.onclick = function(){
+                modal.style.display = "flex"; // Use flex to center content
+                modalImg.src = this.src;
+                modalImg.alt = this.alt;
+            }
+        });
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Close modal when clicking outside the image
+        modal.onclick = function(event) {
+            if (event.target == modal) { // if click is on modal background
+                modal.style.display = "none";
+            }
+        }
+
+    </script>
+</body>
+</html>
